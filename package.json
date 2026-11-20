@@ -7,7 +7,12 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "check": "node scripts/check.mjs",
+    "check:quick": "node scripts/check.mjs --quick",
+    "verify:scene": "node scripts/verify-scene.mjs",
+    "verify:scene:update": "node scripts/verify-scene.mjs --update-baseline",
+    "lint:conventions": "node scripts/lint-conventions.mjs"
   },
   "dependencies": {
     "@babylonjs/core": "^7.0.0",

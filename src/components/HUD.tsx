@@ -1,4 +1,5 @@
 import React from 'react';
+import type { ViewMode } from '../core/BabylonEngine';
 
 const ZONE_NAMES: Record<string, string> = {
   exterior: '🏰 Castle Grounds',
@@ -13,24 +14,43 @@ const ZONE_NAMES: Record<string, string> = {
 interface HUDProps {
   currentZone: string;
   interactionHint: string | null;
+  view: ViewMode;
+  onToggleOverview: () => void;
+  onToggleLakeView: () => void;
+  onToggleLakeLight: () => void;
 }
 
-export const HUD: React.FC<HUDProps> = ({ currentZone, interactionHint }) => {
+const viewButton: React.CSSProperties = {
+  minHeight: 44,
+  padding: '0 12px',
+  color: '#f1d99c',
+  backgroundColor: '#151827',
+  border: '1px solid #806b43',
+  borderRadius: 6,
+  font: '14px Georgia, serif',
+  cursor: 'pointer',
+};
+
+export const HUD: React.FC<HUDProps> = ({ currentZone, interactionHint, view, onToggleOverview, onToggleLakeView, onToggleLakeLight }) => {
+  const overview = view !== 'walk';
+  const lake = view === 'lake-day' || view === 'lake-night';
   return (
     <>
       {/* Crosshair */}
-      <div style={{
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 4,
-        height: 4,
-        borderRadius: '50%',
-        backgroundColor: 'rgba(255, 255, 255, 0.6)',
-        boxShadow: '0 0 6px rgba(255, 255, 255, 0.3)',
-        pointerEvents: 'none',
-      }} />
+      {!overview && (
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: 4,
+          height: 4,
+          borderRadius: '50%',
+          backgroundColor: 'rgba(255, 255, 255, 0.6)',
+          boxShadow: '0 0 6px rgba(255, 255, 255, 0.3)',
+          pointerEvents: 'none',
+        }} />
+      )}
 
       {/* Zone name */}
       <div style={{
@@ -43,7 +63,23 @@ export const HUD: React.FC<HUDProps> = ({ currentZone, interactionHint }) => {
         textShadow: '0 0 10px rgba(212, 175, 55, 0.5)',
         pointerEvents: 'none',
       }}>
-        {ZONE_NAMES[currentZone] ?? currentZone}
+        {lake ? 'Black Lake' : overview ? '🏰 Castle Overview' : ZONE_NAMES[currentZone] ?? currentZone}
+      </div>
+
+      <div style={{ position: 'absolute', top: 12, right: 16, display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <button type="button" onClick={onToggleOverview} aria-keyshortcuts="V" style={viewButton}>
+          {overview ? 'Return to Walk' : 'Castle Overview'} <kbd>V</kbd>
+        </button>
+        {(currentZone === 'exterior' || overview) && (
+          <button type="button" onClick={onToggleLakeView} style={viewButton}>
+            {lake ? 'Castle Only' : 'Lake View'}
+          </button>
+        )}
+        {lake && (
+          <button type="button" onClick={onToggleLakeLight} style={viewButton}>
+            {view === 'lake-day' ? 'Moonlight' : 'Daylight'}
+          </button>
+        )}
       </div>
 
       {/* Controls hint */}
@@ -51,16 +87,19 @@ export const HUD: React.FC<HUDProps> = ({ currentZone, interactionHint }) => {
         position: 'absolute',
         bottom: 20,
         left: 20,
-        color: 'rgba(255, 255, 255, 0.5)',
+        right: 20,
+        color: overview ? '#e6dfce' : 'rgba(255, 255, 255, 0.5)',
         fontFamily: 'monospace',
         fontSize: 12,
         pointerEvents: 'none',
       }}>
-        WASD to move · Mouse to look · Click to capture cursor
+        {overview
+          ? 'Drag to orbit · Scroll or pinch to zoom · Right-drag or two fingers to pan'
+          : 'WASD to move · Mouse to look · [E] Door · [1] Grounds · [2] Great Hall'}
       </div>
 
       {/* Interaction hint */}
-      {interactionHint && (
+      {!overview && interactionHint && (
         <div style={{
           position: 'absolute',
           bottom: '30%',

@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const LoadingScreen: React.FC = () => {
+export const LoadingScreen: React.FC<{ failed: boolean }> = ({ failed }) => {
   return (
     <div style={{
       position: 'absolute',
@@ -33,39 +33,47 @@ export const LoadingScreen: React.FC = () => {
         EXPLORER
       </p>
 
-      {/* Loading bar */}
-      <div style={{
-        width: 300,
-        height: 2,
-        backgroundColor: 'rgba(212, 175, 55, 0.15)',
-        borderRadius: 1,
-        overflow: 'hidden',
-      }}>
-        <div style={{
-          width: '40%',
-          height: '100%',
-          backgroundColor: '#d4af37',
-          borderRadius: 1,
-          animation: 'loadingSlide 1.5s ease-in-out infinite',
-        }} />
-      </div>
+      {failed ? (
+        <div role="alert" style={{ textAlign: 'center', color: '#e5d8b9', padding: '0 20px' }}>
+          <p>The castle couldn't load. Reload the page to try again.</p>
+          <button type="button" onClick={() => window.location.reload()}>Reload page</button>
+        </div>
+      ) : (
+        <>
+          <div role="progressbar" aria-label="Loading the castle" style={{
+            width: 300,
+            height: 2,
+            backgroundColor: 'rgba(212, 175, 55, 0.15)',
+            borderRadius: 1,
+            overflow: 'hidden',
+          }}>
+            <div style={{
+              width: '40%',
+              height: '100%',
+              backgroundColor: '#d4af37',
+              borderRadius: 1,
+              animation: 'loadingSlide 1.5s ease-in-out infinite',
+            }} />
+          </div>
 
-      <p style={{
-        color: 'rgba(255, 255, 255, 0.35)',
-        fontFamily: '"Georgia", serif',
-        fontSize: 13,
-        marginTop: 20,
-      }}>
-        Preparing the castle...
-      </p>
+          <p style={{
+            color: 'rgba(255, 255, 255, 0.35)',
+            fontFamily: '"Georgia", serif',
+            fontSize: 13,
+            marginTop: 20,
+          }}>
+            Preparing the castle...
+          </p>
 
-      <style>{`
-        @keyframes loadingSlide {
-          0% { transform: translateX(-100%); }
-          50% { transform: translateX(375%); }
-          100% { transform: translateX(-100%); }
-        }
-      `}</style>
+          <style>{`
+            @keyframes loadingSlide {
+              0% { transform: translateX(-100%); }
+              50% { transform: translateX(375%); }
+              100% { transform: translateX(-100%); }
+            }
+          `}</style>
+        </>
+      )}
     </div>
   );
 };

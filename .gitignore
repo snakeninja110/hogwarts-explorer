@@ -2,3 +2,12 @@ node_modules/
 dist/
 .DS_Store
 *.local
+*.tsbuildinfo
+
+
+# temp bundles from scripts/
+node_modules/.cache/
+
+# Reference material stays local for now: 96MB of scans and photos, not source.
+# Ignored as a whole directory on purpose — see references/README.md for what belongs here.
+/references/
